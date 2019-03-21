@@ -26,7 +26,7 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('disconnect', function(data) {
     console.log("disconnected for " + data.reason + " : " + socket.id);
-    socket.broadcast.emit('leave',{id: socket.id});
+    socket.broadcast.emit('leave',{id: socket.id})
   });
 
 });
