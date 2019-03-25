@@ -27,10 +27,9 @@ class member {
 }
 
 function setup() {
-  socket = io.connect('http://192.168.1.111:3000');
+  socket = io.connect('http://192.168.1.111:3001');
 
-  createCanvas(1000, 800);
-  background(51);
+  createCanvas(window.innerWidth, window.innerHeight);
 
   leftBuffer  = createGraphics(200, 600);
   rightBuffer = createGraphics(600, 600);
@@ -41,6 +40,10 @@ function setup() {
   drawLowerBuffer();
   drawNameBuffer();
   socketEvents();
+}
+
+function windowResized() {
+  resizeCanvas(window.innerWidth, window.innerHeight);
 }
 
 function draw() {
@@ -59,12 +62,12 @@ function socketEvents() {
   nameHandler();
 
   socket.on('mouse', data => {
-    noStroke();
-    fill(data.r,data.g,data.b);
-    rect(data.x,data.y,data.stroke,data.stroke);
+    rightBuffer.noStroke();
+    rightBuffer.fill(data.r,data.g,data.b);
+    rightBuffer.rect(data.x-200,data.y,data.stroke,data.stroke);
   });
 
-  socket.on('clear', data => background(51));
+  socket.on('clear', data => rightBuffer.background(51));
 
   socket.on('leave', data => {
     for (let i = 0; i < members.length; i++) {
@@ -78,9 +81,9 @@ function socketEvents() {
 
 function mouseDragged() {
   if (mayDraw) {
-    noStroke();
-    fill(mR, mG, mB);
-    rect(mouseX,mouseY,myStroke,myStroke);
+    rightBuffer.noStroke();
+    rightBuffer.fill(mR, mG, mB);
+    rightBuffer.rect(mouseX-200,mouseY,myStroke,myStroke);
 
     socket.emit('mouse',{
       x: mouseX,
@@ -93,6 +96,7 @@ function mouseDragged() {
 }
 
 function drawRightBuffer() {
+  background(51);
 }
 
 function drawLeftBuffer() {
@@ -110,7 +114,7 @@ function drawLeftBuffer() {
   cButton.mousePressed(function() {
     if (mayDraw) {
       socket.emit('clear',{room: myRoom});
-      background(51);
+      rightBuffer.background(51);
     }
   });
 
@@ -145,7 +149,7 @@ function drawLeftBuffer() {
     myRoom = inputRoom.value();
     socket.emit('switchJoin', {room: myRoom});
     socket.emit('clear',{room: myRoom});
-    background(51);
+    rightBuffer.background(51);
     members=[];
   });
 
