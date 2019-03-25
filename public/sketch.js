@@ -1,11 +1,13 @@
 let socket;
 let rSlider, gSlider, bSlider, sSlider;
 let mR, mG, mB;
-let cButton,eButton,upButton;
+let cButton, eButton, upButton, swButton, ranButton;
 let myStroke;
-let inputName;
+let inputName, inputRoom;
+let myRoom;
 let mayDraw = false;
 let members=[];
+let rName;
 
 class member {
   constructor() {
@@ -25,10 +27,10 @@ class member {
 }
 
 function setup() {
+  socket = io.connect('http://192.168.1.111:3000');
+
   createCanvas(1000, 800);
   background(51);
-
-  socket = io.connect('http://97.95.117.48:3000');
 
   leftBuffer  = createGraphics(200, 600);
   rightBuffer = createGraphics(600, 600);
@@ -39,7 +41,6 @@ function setup() {
   drawLowerBuffer();
   drawNameBuffer();
   socketEvents();
-  socket.emit('clear',{});
 }
 
 function draw() {
@@ -66,7 +67,7 @@ function socketEvents() {
   socket.on('clear', data => background(51));
 
   socket.on('leave', data => {
-    for (var i = 0; i < members.length; i++) {
+    for (let i = 0; i < members.length; i++) {
       if (members[i].id == data.id) {
         members.splice(i, 1);
         nameBuffer.background(160);
@@ -85,7 +86,8 @@ function mouseDragged() {
       x: mouseX,
       y: mouseY,
       r: mR , g: mG , b: mB,
-      stroke: myStroke
+      stroke: myStroke,
+      room: myRoom
     });
   }
 }
@@ -106,8 +108,10 @@ function drawLeftBuffer() {
   cButton = createButton("Clear Screen");
   cButton.position(20,160);
   cButton.mousePressed(function() {
-    socket.emit('clear',{});
-    background(51);
+    if (mayDraw) {
+      socket.emit('clear',{room: myRoom});
+      background(51);
+    }
   });
 
   eButton = createButton("Eraser");
@@ -118,24 +122,62 @@ function drawLeftBuffer() {
     bSlider.value(51);
   });
 
-  inputName = createInput("Name");
-  inputName.position(20, 200);
+  socket.emit('rName', function(data) {
+    rName = data[0];
+    inputName = createInput(rName);
+    inputName.position(20, 200);
+  });
+
+  ranButton = createButton("Randomize");
+  ranButton.position(20,225);
+
   upButton = createButton("Connect");
-  upButton.position(20,230);
+  upButton.position(20,280);
+
+  inputRoom = createInput("Room");
+  inputRoom.position(20, 250);
+
+  swButton = createButton("Switch Room");
+  swButton.position(20,281);
+  swButton.hide();
+
+  swButton.mousePressed(function() {
+    myRoom = inputRoom.value();
+    socket.emit('switchJoin', {room: myRoom});
+    socket.emit('clear',{room: myRoom});
+    background(51);
+    members=[];
+  });
+
+  ranButton.mousePressed(function() {
+    socket.emit('rName', function(data) {
+      rName = data[0];
+      inputName.value(rName);
+    });
+  });
 
   upButton.mousePressed(function() {
     upButton.hide();
+    swButton.show();
+    myRoom = inputRoom.value();
     mayDraw = true;
+
+    socket.emit('roomJoin', {room: myRoom});
+    socket.emit('clear',{room: myRoom});
+
     socket.emit('newName',{
       name: inputName.value(),
       user: socket.id,
-      cR: mR, cG: mG, cB: mB
+      cR: mR, cG: mG, cB: mB,
+      room: myRoom
     });
+
     setInterval(function() {
       socket.emit('newName',{
         name: inputName.value(),
         user: socket.id,
-        cR: mR, cG: mG, cB: mB
+        cR: mR, cG: mG, cB: mB,
+        room: myRoom
       });
     },3000);
   });
