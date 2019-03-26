@@ -31,10 +31,10 @@ function setup() {
 
   createCanvas(window.innerWidth, window.innerHeight);
 
-  leftBuffer  = createGraphics(200, 600);
-  rightBuffer = createGraphics(600, 600);
-  lowerBuffer = createGraphics(800, 200);
-  nameBuffer  = createGraphics(200, 800);
+  leftBuffer  = createGraphics(window.innerWidth/4, window.innerHeight/2);
+  rightBuffer = createGraphics(window.innerWidth/4, window.innerHeight/2);
+  lowerBuffer = createGraphics(window.innerWidth-window.innerWidth/4, window.innerHeight/2);
+  nameBuffer  = createGraphics(window.innerWidth/4, window.innerHeight);
   drawLeftBuffer();
   drawRightBuffer();
   drawLowerBuffer();
@@ -53,9 +53,9 @@ function draw() {
   myStroke = sSlider.value();
   leftBuffer.background(mR, mG, mB);
   image(leftBuffer, 0, 0);
-  image(rightBuffer, 200, 0);
-  image(lowerBuffer, 0, 600);
-  image(nameBuffer, 800, 0);
+  image(rightBuffer, window.innerWidth/4, 0);
+  image(lowerBuffer, 0, window.innerHeight-window.innerHeight/2);
+  image(nameBuffer, window.innerWidth-window.innerWidth/4, 0);
 }
 
 function socketEvents() {
