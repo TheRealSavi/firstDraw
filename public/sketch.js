@@ -31,9 +31,9 @@ function setup() {
 
   createCanvas(window.innerWidth, window.innerHeight);
 
-  leftBuffer  = createGraphics(window.innerWidth/4, window.innerHeight/2);
+  leftBuffer  = createGraphics(window.innerWidth/4, window.innerHeight/2+window.innerHeight/4);
   rightBuffer = createGraphics(window.innerWidth/4, window.innerHeight/2);
-  lowerBuffer = createGraphics(window.innerWidth-window.innerWidth/4, window.innerHeight/2);
+  lowerBuffer = createGraphics(window.innerWidth-window.innerWidth/4, window.innerHeight/4);
   nameBuffer  = createGraphics(window.innerWidth/4, window.innerHeight);
   drawLeftBuffer();
   drawRightBuffer();
@@ -43,7 +43,14 @@ function setup() {
 }
 
 function windowResized() {
-  resizeCanvas(window.innerWidth, window.innerHeight);
+  resizeCanvas(window.innerWidth, window.innerHeight, false);
+  leftBuffer  = createGraphics(window.innerWidth/4, window.innerHeight/2+window.innerHeight/4);
+  rightBuffer = createGraphics(window.innerWidth/4, window.innerHeight/2);
+  lowerBuffer = createGraphics(window.innerWidth-window.innerWidth/4, window.innerHeight/4);
+  nameBuffer  = createGraphics(window.innerWidth/4, window.innerHeight);
+  drawRightBuffer();
+  drawLowerBuffer();
+  drawNameBuffer();
 }
 
 function draw() {
@@ -54,7 +61,7 @@ function draw() {
   leftBuffer.background(mR, mG, mB);
   image(leftBuffer, 0, 0);
   image(rightBuffer, window.innerWidth/4, 0);
-  image(lowerBuffer, 0, window.innerHeight-window.innerHeight/2);
+  image(lowerBuffer, 0, window.innerHeight-window.innerHeight/4 );
   image(nameBuffer, window.innerWidth-window.innerWidth/4, 0);
 }
 
