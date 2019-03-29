@@ -2,12 +2,13 @@ let socket;
 let rSlider, gSlider, bSlider, sSlider;
 let mR, mG, mB;
 let cButton, eButton, upButton, swButton, ranButton;
-let myStroke;
+let myStroke, myRawStroke;
 let inputName, inputRoom;
 let myRoom;
 let mayDraw = false;
 let members=[];
 let rName;
+let drawingSize;
 
 class member {
   constructor() {
@@ -30,34 +31,48 @@ function setup() {
   socket = io.connect('http://97.95.117.48:3001');
 
   createCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight));
-  canvasDesigner(true);
+  canvasDesigner(true,true);
 
   socketEvents();
 }
 
 function windowResized() {
   resizeCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight), false);
-  canvasDesigner(false);
+  canvasDesigner(false,true);
 }
 
-function canvasDesigner(drawLeft) {
-  if (Math.floor(window.innerWidth-window.innerWidth/2) <= Math.floor(window.innerHeight-window.innerHeight/4)) {
-    rightBuffer = createGraphics(Math.floor(window.innerWidth/2), Math.floor(window.innerWidth/2));
+function canvasDesigner(drawLeft,create) {
+  if (create) {
+    if (Math.floor(window.innerWidth-window.innerWidth/2) <= Math.floor(window.innerHeight-window.innerHeight/4)) {
+      rightBuffer = createGraphics(Math.floor(window.innerWidth/2), Math.floor(window.innerWidth/2));
+      drawingSize = Math.floor(window.innerWidth/2);
+    } else {
+      rightBuffer = createGraphics(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
+      drawingSize = Math.floor(window.innerHeight/2+window.innerHeight/4);
+    }
+
+    leftBuffer  = createGraphics(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
+    lowerBuffer = createGraphics(Math.floor(window.innerWidth-window.innerWidth/4), Math.floor(window.innerHeight/4));
+    nameBuffer  = createGraphics(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight));
   } else {
-    rightBuffer = createGraphics(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
+    if (Math.floor(window.innerWidth-window.innerWidth/2) <= Math.floor(window.innerHeight-window.innerHeight/4)) {
+      rightBuffer.size(Math.floor(window.innerWidth/2), Math.floor(window.innerWidth/2));
+      drawingSize = Math.floor(window.innerWidth/2);
+    } else {
+      rightBuffer.size(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
+      drawingSize = Math.floor(window.innerHeight/2+window.innerHeight/4);
+    }
+
+    leftBuffer.size(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
+    lowerBuffer.size(Math.floor(window.innerWidth-window.innerWidth/4), Math.floor(window.innerHeight/4));
+    nameBuffer.size(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight));
   }
-
-  leftBuffer  = createGraphics(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
-  lowerBuffer = createGraphics(Math.floor(window.innerWidth-window.innerWidth/4), Math.floor(window.innerHeight/4));
-  nameBuffer  = createGraphics(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight));
-
   drawRightBuffer();
   drawLowerBuffer();
   drawNameBuffer();
   if (drawLeft) {
     drawLeftBuffer();
   }
-
   if (mayDraw) {
     socket.emit('clear',{room: myRoom});
     rightBuffer.background(51);
@@ -70,7 +85,8 @@ function draw() {
   mR = rSlider.value();
   mG = gSlider.value();
   mB = bSlider.value();
-  myStroke = sSlider.value();
+  myStroke = Math.floor(sSlider.value()/100 * drawingSize);
+  myRawStroke = sSlider.value();
   leftBuffer.background(mR, mG, mB);
   image(leftBuffer, 0, 0);
   image(rightBuffer, Math.floor(window.innerWidth/4), 0);
@@ -83,8 +99,11 @@ function socketEvents() {
 
   socket.on('mouse', data => {
     rightBuffer.noStroke();
+    let ourX = Math.floor(data.x/100 * drawingSize);
+    let ourY = Math.floor(data.y/100 * drawingSize);
+    let ourS = Math.floor(data.stroke/100 * drawingSize);
     rightBuffer.fill(data.r,data.g,data.b);
-    rightBuffer.rect(data.x,data.y,data.stroke,data.stroke);
+    rightBuffer.rect(ourX,ourY,ourS,ourS);
   });
 
   socket.on('clear', data => rightBuffer.background(51));
@@ -103,13 +122,16 @@ function mouseDragged() {
   if (mayDraw) {
     rightBuffer.noStroke();
     rightBuffer.fill(mR, mG, mB);
-    rightBuffer.rect(mouseX,mouseY,myStroke,myStroke);
+    rightBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke);
+
+    let relativeX = Math.floor(((mouseX-Math.floor(window.innerWidth/4))/drawingSize)*100);
+    let relativeY = Math.floor((mouseY/drawingSize)*100);
 
     socket.emit('mouse',{
-      x: mouseX,
-      y: mouseY,
+      x: relativeX,
+      y: relativeY,
       r: mR , g: mG , b: mB,
-      stroke: myStroke,
+      stroke: myRawStroke,
       room: myRoom
     });
   }
@@ -126,7 +148,7 @@ function drawLeftBuffer() {
   gSlider.position(20, 50);
   bSlider = createSlider(0, 255, 255);
   bSlider.position(20, 80);
-  sSlider = createSlider(1, 65, 10);
+  sSlider = createSlider(1, 50, 5);
   sSlider.position(20, 110);
 
   cButton = createButton("Clear Screen");
