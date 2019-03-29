@@ -120,7 +120,7 @@ function socketEvents() {
 
 function mouseDragged() {
   if (mayDraw) {
-    if (mouseX >= window.innerWidth/4) {
+    if (mouseX >= Math.floor(window.innerWidth/4)) {
       rightBuffer.noStroke();
       rightBuffer.fill(mR, mG, mB);
       rightBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke);
