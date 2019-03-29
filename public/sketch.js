@@ -120,20 +120,22 @@ function socketEvents() {
 
 function mouseDragged() {
   if (mayDraw) {
-    rightBuffer.noStroke();
-    rightBuffer.fill(mR, mG, mB);
-    rightBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke);
+    if (mouseX >= Math.floor(window.innerWidth/4)) {
+      rightBuffer.noStroke();
+      rightBuffer.fill(mR, mG, mB);
+      rightBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke);
 
-    let relativeX = Math.floor(((mouseX-Math.floor(window.innerWidth/4))/drawingSize)*100);
-    let relativeY = Math.floor((mouseY/drawingSize)*100);
+      let relativeX = Math.floor(((mouseX-Math.floor(window.innerWidth/4))/drawingSize)*100);
+      let relativeY = Math.floor((mouseY/drawingSize)*100);
 
-    socket.emit('mouse',{
-      x: relativeX,
-      y: relativeY,
-      r: mR , g: mG , b: mB,
-      stroke: myRawStroke,
-      room: myRoom
-    });
+      socket.emit('mouse',{
+        x: relativeX,
+        y: relativeY,
+        r: mR , g: mG , b: mB,
+        stroke: myRawStroke,
+        room: myRoom
+      });
+    }
   }
 }
 
