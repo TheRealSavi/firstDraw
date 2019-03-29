@@ -1,12 +1,12 @@
 const express = require('express');
 const app = express();
-const server = app.listen(3001);
+const server = app.listen(3000);
 const socket = require('socket.io');
 const names = require('names.json')
 app.use(express.static('public'));
 const io = socket(server);
 let users = [];
-console.log("\x1b[30m","socket server open");
+console.log("\x1b[97m","socket server open");
 
 class user {
   constructor(id) {
