@@ -27,30 +27,43 @@ class member {
 }
 
 function setup() {
-  socket = io.connect('http://192.168.1.111:3001');
+  socket = io.connect('http://97.95.117.48:3001');
 
-  createCanvas(window.innerWidth, window.innerHeight);
+  createCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight));
+  canvasDesigner(true);
 
-  leftBuffer  = createGraphics(window.innerWidth/4, window.innerHeight/2+window.innerHeight/4);
-  rightBuffer = createGraphics(window.innerWidth/4, window.innerHeight/2);
-  lowerBuffer = createGraphics(window.innerWidth-window.innerWidth/4, window.innerHeight/4);
-  nameBuffer  = createGraphics(window.innerWidth/4, window.innerHeight);
-  drawLeftBuffer();
-  drawRightBuffer();
-  drawLowerBuffer();
-  drawNameBuffer();
   socketEvents();
 }
 
 function windowResized() {
-  resizeCanvas(window.innerWidth, window.innerHeight, false);
-  leftBuffer  = createGraphics(window.innerWidth/4, window.innerHeight/2+window.innerHeight/4);
-  rightBuffer = createGraphics(window.innerWidth/4, window.innerHeight/2);
-  lowerBuffer = createGraphics(window.innerWidth-window.innerWidth/4, window.innerHeight/4);
-  nameBuffer  = createGraphics(window.innerWidth/4, window.innerHeight);
+  resizeCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight), false);
+  canvasDesigner(false);
+}
+
+function canvasDesigner(drawLeft) {
+  if (Math.floor(window.innerWidth-window.innerWidth/2) <= Math.floor(window.innerHeight-window.innerHeight/4)) {
+    rightBuffer = createGraphics(Math.floor(window.innerWidth/2), Math.floor(window.innerWidth/2));
+  } else {
+    rightBuffer = createGraphics(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
+  }
+
+  leftBuffer  = createGraphics(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
+  lowerBuffer = createGraphics(Math.floor(window.innerWidth-window.innerWidth/4), Math.floor(window.innerHeight/4));
+  nameBuffer  = createGraphics(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight));
+
   drawRightBuffer();
   drawLowerBuffer();
   drawNameBuffer();
+  if (drawLeft) {
+    drawLeftBuffer();
+  }
+
+  if (mayDraw) {
+    socket.emit('clear',{room: myRoom});
+    rightBuffer.background(51);
+  } else {
+    rightBuffer.background(51);
+  }
 }
 
 function draw() {
@@ -60,9 +73,9 @@ function draw() {
   myStroke = sSlider.value();
   leftBuffer.background(mR, mG, mB);
   image(leftBuffer, 0, 0);
-  image(rightBuffer, window.innerWidth/4, 0);
-  image(lowerBuffer, 0, window.innerHeight-window.innerHeight/4 );
-  image(nameBuffer, window.innerWidth-window.innerWidth/4, 0);
+  image(rightBuffer, Math.floor(window.innerWidth/4), 0);
+  image(lowerBuffer, 0, Math.floor(window.innerHeight-window.innerHeight/4));
+  image(nameBuffer, Math.floor(window.innerWidth-window.innerWidth/4), 0);
 }
 
 function socketEvents() {
@@ -71,7 +84,7 @@ function socketEvents() {
   socket.on('mouse', data => {
     rightBuffer.noStroke();
     rightBuffer.fill(data.r,data.g,data.b);
-    rightBuffer.rect(data.x-200,data.y,data.stroke,data.stroke);
+    rightBuffer.rect(data.x,data.y,data.stroke,data.stroke);
   });
 
   socket.on('clear', data => rightBuffer.background(51));
@@ -90,7 +103,7 @@ function mouseDragged() {
   if (mayDraw) {
     rightBuffer.noStroke();
     rightBuffer.fill(mR, mG, mB);
-    rightBuffer.rect(mouseX-200,mouseY,myStroke,myStroke);
+    rightBuffer.rect(mouseX,mouseY,myStroke,myStroke);
 
     socket.emit('mouse',{
       x: mouseX,
@@ -103,7 +116,7 @@ function mouseDragged() {
 }
 
 function drawRightBuffer() {
-  background(51);
+  background(200);
 }
 
 function drawLeftBuffer() {
