@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const server = app.listen(3001);
+const server = app.listen(3000);
 const socket = require('socket.io');
 const names = require('names.json')
 app.use(express.static('public'));
@@ -49,9 +49,9 @@ function randomName() {
 }
 
 io.sockets.on('connection', function(socket) {
-  console.log("\x1b[34m","new connection from : " + socket.id);
+  console.log("\x1b[33m","new connection from : " + socket.id);
   users.push(new user(socket.id));
-  console.log("\x1b[34m","user count : " + users.length);
+  console.log("\x1b[33m","user count : " + users.length);
 
   socket.on('rName', function(callBack) {
     callBack(randomName());
@@ -79,7 +79,7 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('clear', function(data) {
     socket.to(data.room).emit('clear',data);
-    console.log("\x1b[33m","cleared canvas on room " + data.room);
+    //console.log("\x1b[33m","cleared canvas on room " + data.room);
   });
 
   socket.on('disconnect', function(data) {
