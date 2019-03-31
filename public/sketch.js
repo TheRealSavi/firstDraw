@@ -106,18 +106,27 @@ function draw() {
   mR = rSlider.value();
   mG = gSlider.value();
   mB = bSlider.value();
-  myStroke = Math.floor(sSlider.value()/100 * drawingSize);
   myRawStroke = sSlider.value();
+
+  myStroke = Math.floor(sSlider.value()/100 * drawingSize);
   leftBuffer.background(mR, mG, mB);
   preBuffer.clear();
-  if (mouseX >= Math.floor(window.innerWidth/4) && mouseX <= Math.floor(window.innerWidth-window.innerWidth/4) &&
-      mouseY >= Math.floor(0) && mouseY <= Math.floor(window.innerHeight-window.innerHeight/4)
-     ) {
-       preBuffer.noFill();
-       preBuffer.stroke(mR, mG, mB);
-       preBuffer.rectMode(CENTER);
-       preBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke);
+
+  if (
+    mouseX >= Math.floor(window.innerWidth/4) &&
+    mouseX <= Math.floor(window.innerWidth-window.innerWidth/4) &&
+    mouseY >= Math.floor(0) &&
+    mouseY <= Math.floor(window.innerHeight-window.innerHeight/4)
+  ) {
+    noCursor();
+    preBuffer.noFill();
+    preBuffer.stroke(mR, mG, mB);
+    preBuffer.rectMode(CENTER);
+    preBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke);
+  } else {
+    cursor();
   }
+
   image(leftBuffer, 0, 0);
   image(rightBuffer, Math.floor(window.innerWidth/4), 0);
   image(preBuffer, Math.floor(window.innerWidth/4), 0);
