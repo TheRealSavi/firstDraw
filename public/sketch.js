@@ -9,17 +9,18 @@ let mayDraw = false;
 let members=[];
 let rName;
 let mayResize = true;
+let delayResize = false;
 let drawingSize;
 
 class member {
   constructor() {
-  this.x = 0;
-  this.y = 0;
+  this.x  = 0;
+  this.y  = 0;
   this.mR = 100;
   this.mG = 0;
   this.mB = 255;
   this.name = "noname";
-  this.id="noid";
+  this.id   = "noid";
   }
   show() {
     nameBuffer.fill(this.mR, this.mG, this.mB);
@@ -38,7 +39,11 @@ function setup() {
 
   setInterval(function() {
     mayResize = true;
-  },750);
+    if (delayResize) {
+      delayResize = false;
+      canvasDesigner(false,true);
+    }
+  },350);
 }
 
 function windowResized() {
@@ -46,6 +51,8 @@ function windowResized() {
     resizeCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight), false);
     canvasDesigner(false,true);
     mayResize = false;
+  } else {
+    delayResize = true;
   }
 }
 
@@ -58,22 +65,25 @@ function canvasDesigner(drawLeft,create) {
       rightBuffer = createGraphics(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
       drawingSize = Math.floor(window.innerHeight/2+window.innerHeight/4);
     }
-
     leftBuffer  = createGraphics(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
     lowerBuffer = createGraphics(Math.floor(window.innerWidth-window.innerWidth/4), Math.floor(window.innerHeight/4));
     nameBuffer  = createGraphics(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight));
   } else {
     if (Math.floor(window.innerWidth-window.innerWidth/2) <= Math.floor(window.innerHeight-window.innerHeight/4)) {
-      rightBuffer.size(Math.floor(window.innerWidth/2), Math.floor(window.innerWidth/2));
-      drawingSize = Math.floor(window.innerWidth/2);
+      rightBuffer.width  = Math.floor(window.innerWidth/2);
+      rightBuffer.height = Math.floor(window.innerWidth/2);
+      drawingSize        = Math.floor(window.innerWidth/2);
     } else {
-      rightBuffer.size(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
-      drawingSize = Math.floor(window.innerHeight/2+window.innerHeight/4);
+      rightBuffer.width  = Math.floor(window.innerHeight/2+window.innerHeight/4);
+      rightBuffer.height = Math.floor(window.innerHeight/2+window.innerHeight/4);
+      drawingSize        = Math.floor(window.innerHeight/2+window.innerHeight/4);
     }
-
-    leftBuffer.size(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
-    lowerBuffer.size(Math.floor(window.innerWidth-window.innerWidth/4), Math.floor(window.innerHeight/4));
-    nameBuffer.size(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight));
+    leftBuffer.width     = Math.floor(window.innerWidth/4);
+    leftBuffer.height    = Math.floor(window.innerHeight/2+window.innerHeight/4);
+    lowerBuffer.width    = Math.floor(window.innerWidth-window.innerWidth/4);
+    lowerBuffer.height   = Math.floor(window.innerHeight/4);
+    nameBuffer.width     = Math.floor(window.innerWidth/4);
+    nameBuffer.height    = Math.floor(window.innerHeight);
   }
   drawRightBuffer();
   drawLowerBuffer();
@@ -150,7 +160,7 @@ function mouseDragged() {
 }
 
 function drawRightBuffer() {
-  background(200);
+  background(210);
 }
 
 function drawLeftBuffer() {
