@@ -60,11 +60,11 @@ function canvasDesigner(drawLeft,create) {
   if (create) {
     if (Math.floor(window.innerWidth-window.innerWidth/2) <= Math.floor(window.innerHeight-window.innerHeight/4)) {
       rightBuffer = createGraphics(Math.floor(window.innerWidth/2), Math.floor(window.innerWidth/2));
-      preBuffer = createGraphics(Math.floor(window.innerWidth/2), Math.floor(window.innerWidth/2));
+      preBuffer   = createGraphics(Math.floor(window.innerWidth/2), Math.floor(window.innerWidth/2));
       drawingSize = Math.floor(window.innerWidth/2);
     } else {
       rightBuffer = createGraphics(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
-      preBuffer = createGraphics(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
+      preBuffer   = createGraphics(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
       drawingSize = Math.floor(window.innerHeight/2+window.innerHeight/4);
     }
     leftBuffer  = createGraphics(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
@@ -74,10 +74,14 @@ function canvasDesigner(drawLeft,create) {
     if (Math.floor(window.innerWidth-window.innerWidth/2) <= Math.floor(window.innerHeight-window.innerHeight/4)) {
       rightBuffer.width  = Math.floor(window.innerWidth/2);
       rightBuffer.height = Math.floor(window.innerWidth/2);
+      preBuffer.width    = Math.floor(window.innerWidth/2);
+      preBuffer.height   = Math.floor(window.innerWidth/2);
       drawingSize        = Math.floor(window.innerWidth/2);
     } else {
       rightBuffer.width  = Math.floor(window.innerHeight/2+window.innerHeight/4);
       rightBuffer.height = Math.floor(window.innerHeight/2+window.innerHeight/4);
+      preBuffer.width    = Math.floor(window.innerHeight/2+window.innerHeight/4);
+      preBuffer.height   = Math.floor(window.innerHeight/2+window.innerHeight/4);
       drawingSize        = Math.floor(window.innerHeight/2+window.innerHeight/4);
     }
     leftBuffer.width     = Math.floor(window.innerWidth/4);
