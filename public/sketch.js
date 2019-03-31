@@ -122,7 +122,11 @@ function draw() {
     preBuffer.noFill();
     preBuffer.stroke(mR, mG, mB);
     preBuffer.rectMode(CENTER);
-    preBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke);
+    preBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke,20);
+
+    preBuffer.noFill();
+    preBuffer.stroke(255);
+    preBuffer.circle(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke/2);
   } else {
     cursor();
   }
@@ -144,7 +148,7 @@ function socketEvents() {
     let ourS = Math.floor(data.stroke/100 * drawingSize);
     rightBuffer.fill(data.r,data.g,data.b);
     rightBuffer.rectMode(CENTER);
-    rightBuffer.rect(ourX,ourY,ourS,ourS);
+    rightBuffer.rect(ourX,ourY,ourS,ourS,20);
   });
 
   socket.on('clear', data => rightBuffer.background(51));
@@ -165,7 +169,7 @@ function mouseDragged() {
       rightBuffer.noStroke();
       rightBuffer.fill(mR, mG, mB);
       rightBuffer.rectMode(CENTER);
-      rightBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke);
+      rightBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke,20);
 
       let relativeX = Math.floor(((mouseX-Math.floor(window.innerWidth/4))/drawingSize)*100);
       let relativeY = Math.floor((mouseY/drawingSize)*100);
