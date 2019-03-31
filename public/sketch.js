@@ -60,9 +60,11 @@ function canvasDesigner(drawLeft,create) {
   if (create) {
     if (Math.floor(window.innerWidth-window.innerWidth/2) <= Math.floor(window.innerHeight-window.innerHeight/4)) {
       rightBuffer = createGraphics(Math.floor(window.innerWidth/2), Math.floor(window.innerWidth/2));
+      preBuffer = createGraphics(Math.floor(window.innerWidth/2), Math.floor(window.innerWidth/2));
       drawingSize = Math.floor(window.innerWidth/2);
     } else {
       rightBuffer = createGraphics(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
+      preBuffer = createGraphics(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
       drawingSize = Math.floor(window.innerHeight/2+window.innerHeight/4);
     }
     leftBuffer  = createGraphics(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
@@ -86,6 +88,7 @@ function canvasDesigner(drawLeft,create) {
     nameBuffer.height    = Math.floor(window.innerHeight);
   }
   drawRightBuffer();
+  drawPreBuffer();
   drawLowerBuffer();
   drawNameBuffer();
   if (drawLeft) {
@@ -106,8 +109,18 @@ function draw() {
   myStroke = Math.floor(sSlider.value()/100 * drawingSize);
   myRawStroke = sSlider.value();
   leftBuffer.background(mR, mG, mB);
+  preBuffer.clear();
+  if (mouseX >= Math.floor(window.innerWidth/4) && mouseX <= Math.floor(window.innerWidth-window.innerWidth/4) &&
+      mouseY >= Math.floor(0) && mouseY <= Math.floor(window.innerHeight-window.innerHeight/4)
+     ) {
+       preBuffer.noFill();
+       preBuffer.stroke(mR, mG, mB);
+       preBuffer.rectMode(CENTER);
+       preBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke);
+  }
   image(leftBuffer, 0, 0);
   image(rightBuffer, Math.floor(window.innerWidth/4), 0);
+  image(preBuffer, Math.floor(window.innerWidth/4), 0);
   image(lowerBuffer, 0, Math.floor(window.innerHeight-window.innerHeight/4));
   image(nameBuffer, Math.floor(window.innerWidth-window.innerWidth/4), 0);
 }
@@ -259,6 +272,9 @@ function drawNameBuffer() {
   nameBuffer.background(160);
 }
 
+function drawPreBuffer() {
+  preBuffer.clear();
+}
 function updateName(data,me,y) {
   members[me].x=20;
   members[me].y=y;
