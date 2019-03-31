@@ -111,6 +111,7 @@ function socketEvents() {
     let ourY = Math.floor(data.y/100 * drawingSize);
     let ourS = Math.floor(data.stroke/100 * drawingSize);
     rightBuffer.fill(data.r,data.g,data.b);
+    rightBuffer.rectMode(CENTER);
     rightBuffer.rect(ourX,ourY,ourS,ourS);
   });
 
@@ -131,6 +132,7 @@ function mouseDragged() {
     if (mouseX >= Math.floor(window.innerWidth/4)) {
       rightBuffer.noStroke();
       rightBuffer.fill(mR, mG, mB);
+      rightBuffer.rectMode(CENTER);
       rightBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke);
 
       let relativeX = Math.floor(((mouseX-Math.floor(window.innerWidth/4))/drawingSize)*100);
