@@ -8,6 +8,7 @@ let myRoom;
 let mayDraw = false;
 let members=[];
 let rName;
+let mayResize = true;
 let drawingSize;
 
 class member {
@@ -28,17 +29,24 @@ class member {
 }
 
 function setup() {
-  socket = io.connect('http://97.95.117.48:3000');
+  socket = io.connect('http://97.95.117.48:3001');
 
   createCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight));
   canvasDesigner(true,true);
 
   socketEvents();
+
+  setInterval(function() {
+    mayResize = true;
+  },750);
 }
 
 function windowResized() {
-  resizeCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight), false);
-  canvasDesigner(false,true);
+  if (mayResize) {
+    resizeCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight), false);
+    canvasDesigner(false,true);
+    mayResize = false;
+  }
 }
 
 function canvasDesigner(drawLeft,create) {
