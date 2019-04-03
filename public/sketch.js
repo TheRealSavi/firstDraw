@@ -88,6 +88,11 @@ class locationPointer {
       fill(r, g, b);
       rect(this.x, this.y, this.w, this.h);
     }
+    if (this.name == "name") {
+      noStroke();
+      fill(this.c);
+      rect(this.x, this.y, this.w, this.h);
+    }
   }
 }
 
@@ -341,9 +346,8 @@ function nameHandler() {
         if (members[i].id == data.user) {
           let margin = (i+1) * 28 + 10;
           updateName(data,i,margin);
-          //background(160);
           for (let j = 0; j < pointers.length; j++) {
-            pointers[j].resize();
+            pointers[j].recolor();
           }
           for (let i = 0; i < members.length; i++) {
             members[i].show();
@@ -359,9 +363,8 @@ function nameHandler() {
         }
       }
     }
-    //background(160);
-    for (let i = 0; i < pointers.length; i++) {
-      pointers[i].resize();
+    for (let j = 0; j < pointers.length; j++) {
+      pointers[j].recolor();
     }
     for (let i = 0; i < members.length; i++) {
       members[i].show();
