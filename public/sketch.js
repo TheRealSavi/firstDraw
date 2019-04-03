@@ -11,6 +11,7 @@ let rName;
 let mayResize = true;
 let delayResize = false;
 let drawingSize;
+let pointers=[];
 
 class member {
   constructor() {
@@ -23,17 +24,88 @@ class member {
   this.id   = "noid";
   }
   show() {
-    nameBuffer.fill(this.mR, this.mG, this.mB);
-    nameBuffer.textSize(28);
-    nameBuffer.text(this.name,this.x, this.y);
+    for (var i = 0; i < pointers.length; i++) {
+      if (pointers[i].name == "name") {
+        fill(this.mR, this.mG, this.mB);
+        textSize(28);
+        let naX = this.x + pointers[i].x
+        text(this.name,naX, this.y);
+      }
+    }
+
+  }
+}
+
+class locationPointer {
+  constructor(data) {
+    this.name = data.type;
+    this.c    = data.shade;
+  }
+  resize() {
+    switch(this.name) {
+      case "right":
+        this.x = Math.floor(window.innerWidth/4);
+        this.y = 0;
+        if (Math.floor(window.innerWidth-window.innerWidth/2) <= Math.floor(window.innerHeight-window.innerHeight/4)) {
+          this.w = Math.floor(window.innerWidth/2);
+          this.h = Math.floor(window.innerWidth/2);
+          drawingSize = Math.floor(window.innerWidth/2);
+        } else {
+          this.w = Math.floor(window.innerHeight/2+window.innerHeight/4);
+          this.h = Math.floor(window.innerHeight/2+window.innerHeight/4);
+          drawingSize = Math.floor(window.innerHeight/2+window.innerHeight/4);
+        }
+      break;
+      case "left":
+        this.x = 0;
+        this.y = 0;
+        this.w = Math.floor(window.innerWidth/4);
+        this.h = Math.floor(window.innerHeight/2+window.innerHeight/4);
+      break;
+      case "lower":
+        this.x = 0;
+        this.y = Math.floor(window.innerHeight-window.innerHeight/4);
+        this.w = Math.floor(window.innerWidth-window.innerWidth/4);
+        this.h = Math.floor(window.innerHeight/4);
+      break;
+      case "name":
+        this.x = Math.floor(window.innerWidth-window.innerWidth/4);
+        this.y = 0;
+        this.w = Math.floor(window.innerWidth/4);
+        this.h = Math.floor(window.innerHeight);
+      break;
+    }
+    this.update();
+  }
+  update() {
+    noStroke();
+    fill(this.c);
+    rect(this.x, this.y, this.w, this.h);
+  }
+  recolor(r, g, b) {
+    if (this.name == "left") {
+      noStroke();
+      fill(r, g, b);
+      rect(this.x, this.y, this.w, this.h);
+    }
   }
 }
 
 function setup() {
-  socket = io.connect('http://97.95.117.48:3000');
+  socket = io.connect('http://97.95.117.48:3001');
 
   createCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight));
-  canvasDesigner(true,true);
+
+  pointers.push(new locationPointer({type:"left",  shade:51}));
+  pointers.push(new locationPointer({type:"right", shade:0}));
+  pointers.push(new locationPointer({type:"lower", shade:80}));
+  pointers.push(new locationPointer({type:"name",  shade:160}));
+
+  for (let i = 0; i < pointers.length; i++) {
+    pointers[i].resize();
+  }
+
+  drawControls();
 
   socketEvents();
 
@@ -41,7 +113,9 @@ function setup() {
     mayResize = true;
     if (delayResize) {
       delayResize = false;
-      canvasDesigner(false,true);
+      for (let i = 0; i < pointers.length; i++) {
+        pointers[i].resize();
+      }
     }
   },350);
 }
@@ -49,60 +123,12 @@ function setup() {
 function windowResized() {
   if (mayResize) {
     resizeCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight), false);
-    canvasDesigner(false,true);
+    for (var i = 0; i < pointers.length; i++) {
+      pointers[i].resize();
+    }
     mayResize = false;
   } else {
     delayResize = true;
-  }
-}
-
-function canvasDesigner(drawLeft,create) {
-  if (create) {
-    if (Math.floor(window.innerWidth-window.innerWidth/2) <= Math.floor(window.innerHeight-window.innerHeight/4)) {
-      rightBuffer = createGraphics(Math.floor(window.innerWidth/2), Math.floor(window.innerWidth/2));
-      preBuffer   = createGraphics(Math.floor(window.innerWidth/2), Math.floor(window.innerWidth/2));
-      drawingSize = Math.floor(window.innerWidth/2);
-    } else {
-      rightBuffer = createGraphics(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
-      preBuffer   = createGraphics(Math.floor(window.innerHeight/2+window.innerHeight/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
-      drawingSize = Math.floor(window.innerHeight/2+window.innerHeight/4);
-    }
-    leftBuffer  = createGraphics(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight/2+window.innerHeight/4));
-    lowerBuffer = createGraphics(Math.floor(window.innerWidth-window.innerWidth/4), Math.floor(window.innerHeight/4));
-    nameBuffer  = createGraphics(Math.floor(window.innerWidth/4), Math.floor(window.innerHeight));
-  } else {
-    if (Math.floor(window.innerWidth-window.innerWidth/2) <= Math.floor(window.innerHeight-window.innerHeight/4)) {
-      rightBuffer.width  = Math.floor(window.innerWidth/2);
-      rightBuffer.height = Math.floor(window.innerWidth/2);
-      preBuffer.width    = Math.floor(window.innerWidth/2);
-      preBuffer.height   = Math.floor(window.innerWidth/2);
-      drawingSize        = Math.floor(window.innerWidth/2);
-    } else {
-      rightBuffer.width  = Math.floor(window.innerHeight/2+window.innerHeight/4);
-      rightBuffer.height = Math.floor(window.innerHeight/2+window.innerHeight/4);
-      preBuffer.width    = Math.floor(window.innerHeight/2+window.innerHeight/4);
-      preBuffer.height   = Math.floor(window.innerHeight/2+window.innerHeight/4);
-      drawingSize        = Math.floor(window.innerHeight/2+window.innerHeight/4);
-    }
-    leftBuffer.width     = Math.floor(window.innerWidth/4);
-    leftBuffer.height    = Math.floor(window.innerHeight/2+window.innerHeight/4);
-    lowerBuffer.width    = Math.floor(window.innerWidth-window.innerWidth/4);
-    lowerBuffer.height   = Math.floor(window.innerHeight/4);
-    nameBuffer.width     = Math.floor(window.innerWidth/4);
-    nameBuffer.height    = Math.floor(window.innerHeight);
-  }
-  drawRightBuffer();
-  drawPreBuffer();
-  drawLowerBuffer();
-  drawNameBuffer();
-  if (drawLeft) {
-    drawLeftBuffer();
-  }
-  if (mayDraw) {
-    socket.emit('clear',{room: myRoom});
-    rightBuffer.background(51);
-  } else {
-    rightBuffer.background(51);
   }
 }
 
@@ -113,55 +139,63 @@ function draw() {
   myRawStroke = sSlider.value();
 
   myStroke = Math.floor(sSlider.value()/100 * drawingSize);
-  leftBuffer.background(mR, mG, mB);
-  preBuffer.clear();
 
-  if (
-    mouseX >= Math.floor(window.innerWidth/4) &&
-    mouseX <= Math.floor(window.innerWidth-window.innerWidth/4) &&
-    mouseY >= Math.floor(0) &&
-    mouseY <= Math.floor(window.innerHeight-window.innerHeight/4)
-  ) {
-    noCursor();
-    preBuffer.noFill();
-    preBuffer.stroke(mR, mG, mB);
-    preBuffer.rectMode(CENTER);
-    preBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke,20);
-
-    preBuffer.noFill();
-    preBuffer.stroke(255);
-    preBuffer.circle(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke/2);
-  } else {
-    cursor();
+  for (var i = 0; i < pointers.length; i++) {
+    pointers[i].recolor(mR, mG, mB);
   }
 
-  image(leftBuffer, 0, 0);
-  image(rightBuffer, Math.floor(window.innerWidth/4), 0);
-  image(preBuffer, Math.floor(window.innerWidth/4), 0);
-  image(lowerBuffer, 0, Math.floor(window.innerHeight-window.innerHeight/4));
-  image(nameBuffer, Math.floor(window.innerWidth-window.innerWidth/4), 0);
+  // if (
+  //   mouseX >= Math.floor(window.innerWidth/4) &&
+  //   mouseX <= Math.floor(window.innerWidth-window.innerWidth/4) &&
+  //   mouseY >= Math.floor(0) &&
+  //   mouseY <= Math.floor(window.innerHeight-window.innerHeight/4)
+  // ) {
+  //   noCursor();
+  //   preBuffer.noFill();
+  //   preBuffer.stroke(mR, mG, mB);
+  //   preBuffer.rectMode(CENTER);
+  //   preBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke,20);
+  //
+  //   preBuffer.noFill();
+  //   preBuffer.stroke(255);
+  //   preBuffer.circle(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke/2);
+  // } else {
+  //   cursor();
+  // }
+
+// image(preBuffer, Math.floor(window.innerWidth/4), 0); //clear
 }
 
 function socketEvents() {
   nameHandler();
 
   socket.on('mouse', data => {
-    rightBuffer.noStroke();
-    let ourX = Math.floor(data.x/100 * drawingSize);
+    noStroke();
+    let ourX = Math.floor(data.x/100 * drawingSize) + Math.floor(window.innerWidth/4);
     let ourY = Math.floor(data.y/100 * drawingSize);
     let ourS = Math.floor(data.stroke/100 * drawingSize);
-    rightBuffer.fill(data.r,data.g,data.b);
-    rightBuffer.rectMode(CENTER);
-    rightBuffer.rect(ourX,ourY,ourS,ourS,20);
+    fill(data.r,data.g,data.b);
+    push();
+    rectMode(CENTER);
+    rect(ourX,ourY,ourS,ourS,20);
+    pop();
   });
 
-  socket.on('clear', data => rightBuffer.background(51));
+  socket.on('clear', data => {
+    //background(51)
+    for (let i = 0; i < pointers.length; i++) {
+      pointers[i].resize();
+    }
+  });
 
   socket.on('leave', data => {
     for (let i = 0; i < members.length; i++) {
       if (members[i].id == data.id) {
         members.splice(i, 1);
-        nameBuffer.background(160);
+        //background(160);
+        for (let j = 0; j < pointers.length; j++) {
+          pointers[j].resize();
+        }
       }
     }
   });
@@ -170,10 +204,12 @@ function socketEvents() {
 function mouseDragged() {
   if (mayDraw) {
     if (mouseX >= Math.floor(window.innerWidth/4)) {
-      rightBuffer.noStroke();
-      rightBuffer.fill(mR, mG, mB);
-      rightBuffer.rectMode(CENTER);
-      rightBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke,20);
+      noStroke();
+      fill(mR, mG, mB);
+      push();
+      rectMode(CENTER);
+      rect(mouseX,mouseY,myStroke,myStroke,20);
+      pop();
 
       let relativeX = Math.floor(((mouseX-Math.floor(window.innerWidth/4))/drawingSize)*100);
       let relativeY = Math.floor((mouseY/drawingSize)*100);
@@ -189,11 +225,7 @@ function mouseDragged() {
   }
 }
 
-function drawRightBuffer() {
-  background(210);
-}
-
-function drawLeftBuffer() {
+function drawControls() {
   rSlider = createSlider(0, 255, 100);
   rSlider.position(20, 20);
   gSlider = createSlider(0, 255, 0);
@@ -208,7 +240,10 @@ function drawLeftBuffer() {
   cButton.mousePressed(function() {
     if (mayDraw) {
       socket.emit('clear',{room: myRoom});
-      rightBuffer.background(51);
+      //background(51);
+      for (let i = 0; i < pointers.length; i++) {
+        pointers[i].resize();
+      }
     }
   });
 
@@ -243,7 +278,9 @@ function drawLeftBuffer() {
     myRoom = inputRoom.value();
     socket.emit('switchJoin', {room: myRoom});
     socket.emit('clear',{room: myRoom});
-    rightBuffer.background(51);
+    for (let i = 0; i < pointers.length; i++) {
+      pointers[i].resize();
+    }
     members=[];
   });
 
@@ -281,17 +318,6 @@ function drawLeftBuffer() {
   });
 }
 
-function drawLowerBuffer() {
-  lowerBuffer.background(80);
-}
-
-function drawNameBuffer() {
-  nameBuffer.background(160);
-}
-
-function drawPreBuffer() {
-  preBuffer.clear();
-}
 function updateName(data,me,y) {
   members[me].x=20;
   members[me].y=y;
@@ -315,7 +341,10 @@ function nameHandler() {
         if (members[i].id == data.user) {
           let margin = (i+1) * 28 + 10;
           updateName(data,i,margin);
-          nameBuffer.background(160);
+          //background(160);
+          for (let j = 0; j < pointers.length; j++) {
+            pointers[j].resize();
+          }
           for (let i = 0; i < members.length; i++) {
             members[i].show();
           }
@@ -330,7 +359,10 @@ function nameHandler() {
         }
       }
     }
-    nameBuffer.background(160);
+    //background(160);
+    for (let i = 0; i < pointers.length; i++) {
+      pointers[i].resize();
+    }
     for (let i = 0; i < members.length; i++) {
       members[i].show();
     }
