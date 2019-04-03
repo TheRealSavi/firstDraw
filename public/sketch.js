@@ -30,7 +30,7 @@ class member {
 }
 
 function setup() {
-  socket = io.connect('http://97.95.117.48:3000');
+  socket = io.connect('http://97.95.117.48:3001');
 
   createCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight));
   canvasDesigner(true,true);
@@ -123,6 +123,7 @@ function draw() {
     mouseY <= Math.floor(window.innerHeight-window.innerHeight/4)
   ) {
     noCursor();
+    push();
     preBuffer.noFill();
     preBuffer.stroke(mR, mG, mB);
     preBuffer.rectMode(CENTER);
@@ -131,6 +132,7 @@ function draw() {
     preBuffer.noFill();
     preBuffer.stroke(255);
     preBuffer.circle(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke/2);
+    pop();
   } else {
     cursor();
   }
@@ -150,9 +152,11 @@ function socketEvents() {
     let ourX = Math.floor(data.x/100 * drawingSize);
     let ourY = Math.floor(data.y/100 * drawingSize);
     let ourS = Math.floor(data.stroke/100 * drawingSize);
+    push();
     rightBuffer.fill(data.r,data.g,data.b);
     rightBuffer.rectMode(CENTER);
     rightBuffer.rect(ourX,ourY,ourS,ourS,20);
+    pop();
   });
 
   socket.on('clear', data => rightBuffer.background(51));
@@ -170,11 +174,12 @@ function socketEvents() {
 function mouseDragged() {
   if (mayDraw) {
     if (mouseX >= Math.floor(window.innerWidth/4)) {
+      push();
       rightBuffer.noStroke();
       rightBuffer.fill(mR, mG, mB);
       rightBuffer.rectMode(CENTER);
       rightBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke,20);
-
+      pop();
       let relativeX = Math.floor(((mouseX-Math.floor(window.innerWidth/4))/drawingSize)*100);
       let relativeY = Math.floor((mouseY/drawingSize)*100);
 
