@@ -30,7 +30,7 @@ class member {
 }
 
 function setup() {
-  socket = io.connect('http://97.95.117.48:3001');
+  socket = io.connect('http://97.95.117.48:3000');
 
   createCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight));
   canvasDesigner(true,true);
@@ -180,6 +180,7 @@ function mouseDragged() {
       rightBuffer.rectMode(CENTER);
       rightBuffer.rect(mouseX-Math.floor(window.innerWidth/4),mouseY,myStroke,myStroke,20);
       pop();
+
       let relativeX = Math.floor(((mouseX-Math.floor(window.innerWidth/4))/drawingSize)*100);
       let relativeY = Math.floor((mouseY/drawingSize)*100);
 

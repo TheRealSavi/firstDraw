@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const server = app.listen(3001);
+const server = app.listen(3000);
 const socket = require('socket.io');
 const names = require('names.json')
 app.use(express.static('public'));
