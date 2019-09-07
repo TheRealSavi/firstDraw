@@ -20,6 +20,7 @@ class user {
     this.room = roomNew;
     console.log("\x1b[35m","switched to room " + this.room + " " + socket.id);
     console.log("\x1b[35m","switched to room " + this.room + " " + socket.id);
+    console.log("\x1b[35m","switched to room " + this.room + " " + socket.id);
   }
   joinRoom(roomNew, socket) {
     socket.join(roomNew);
