@@ -12,6 +12,9 @@ let mayResize = true;
 let delayResize = false;
 let drawingSize;
 
+let myWANIP = '73.145.222.113';
+let myPort = '3000';
+
 class member {
   constructor() {
   this.x  = 0;
@@ -30,7 +33,7 @@ class member {
 }
 
 function setup() {
-  socket = io.connect('http://97.95.117.48:3000');
+  socket = io.connect('http://'+myWANIP+':'+myPort);
 
   createCanvas(Math.floor(window.innerWidth), Math.floor(window.innerHeight));
   canvasDesigner(true,true);
