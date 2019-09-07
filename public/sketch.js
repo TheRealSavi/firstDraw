@@ -12,7 +12,7 @@ let mayResize = true;
 let delayResize = false;
 let drawingSize;
 
-let myWANIP = '73.145.222.113';
+let myWANIP = 'localhost';
 let myPort = '3000';
 
 class member {
